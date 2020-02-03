@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
   myfileLAMMPS.close();
 
   
-  cout << "Klaar!!" << endl;
+  cout << "Clear!!" << endl;
   
   return (0);
 
