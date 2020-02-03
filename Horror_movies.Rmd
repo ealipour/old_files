@@ -1,0 +1,46 @@
+---
+title: "Horror_movies.Rmd"
+author: "Elnaz Alipour"
+date: "21/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = F)
+```
+
+## Data
+The packages to use and the data
+
+```{r}
+shhh <- suppressPackageStartupMessages
+shhh(library(tidyverse))
+shhh(library(RColorBrewer))
+ratings <- read.csv("./data/horror_movies.csv", stringsAsFactors = FALSE)
+head(ratings)
+```
+
+The genres column need to be tidied, I wil use tidyr::separate_rows for that. but first:
+
+```{r}
+ratings %>% ggplot(aes(x=fct_infreq(fct_lump(language)),fill=release_country))+geom_bar()
+ratings %>% ggplot(aes(x=forcats::fct_infreq(fct_lump_min(language,50)),fill=fct_infreq(fct_lump_min(release_country,50))))+geom_bar()+theme_classic()
+```
+
+
+let's see if the language of the movie or the country of release changes the avg rating (and the number of un-rated movies)
+
+```{r}
+ratings %>% group_by(language) %>% summarize(avg_rating=mean(review_rating,na.rm=TRUE),na_count=sum(is.na(review_rating))) %>% ggplot(aes(avg_rating))+geom_histogram(bins=50)
+```
+
+```{r}
+ratings %>% filter(language=='Telugu')
+```
+some tidying up:
+
+```{r}
+ratings_by_genre <- ratings %>% group_by(genres) %>% summarize(avg_rating=mean(review_rating,na.rm = T),count=n(),sd_ratings=sd(review_rating,na.rm=T)) %>% filter(count>10) %>% arrange(desc(avg_rating)) 
+ratings_by_genre 
+```
+
